@@ -40,9 +40,10 @@ resource "aws_instance" "ansible" {
 
 resource "aws_instance" "client" {
   count = 2
-  ami             = "${var.ami}" #Amazon Linux
+  ami             = "${element(var.amis, count.index)}" #Amazon Linux
   instance_type   = "t2.micro"
   key_name        = "frankfurt_key${count.index + 1}"
+  #key_name        = "frankfurt_key1"
   monitoring      = "false"
   #security_groups = ["${aws_security_group.new_Alex_task1_SSH_HTTP_HTTPS_8080.name}"]
   vpc_security_group_ids = ["sg-0c4d0b9d26d81d4fc", "sg-0bab7953543f29ecc"]
@@ -53,5 +54,26 @@ resource "aws_instance" "client" {
 
   tags {
     Name = "Client-${count.index + 1}"
+    #Name = "Client-1"
   }
 }
+
+# resource "aws_instance" "client2" {
+#   #count = 1
+#   ami             = "ami-090f10efc254eaf55" #Ubuntu
+#   instance_type   = "t2.micro"
+#   #key_name        = "frankfurt_key${count.index + 1}"
+#   key_name        = "frankfurt_key2"
+#   monitoring      = "false"
+#   #security_groups = ["${aws_security_group.new_Alex_task1_SSH_HTTP_HTTPS_8080.name}"]
+#   vpc_security_group_ids = ["sg-0c4d0b9d26d81d4fc", "sg-0bab7953543f29ecc"]
+#   root_block_device = {
+#     volume_size = "8"
+#     volume_type = "gp2"
+#   }
+#
+#   tags {
+#     #Name = "Client-${count.index + 1}"
+#     Name = "Client-2"
+#   }
+# }

@@ -1,0 +1,22 @@
+---
+- name: Install Apache and Upload my personal page
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: ./index.html
+    dest_file: /var/www/html
+
+  tasks:
+  - name: Install Apache
+    yum: name=httpd state=latest
+  - name: Copy my page to the server
+    copy: src={{ source_file }} dest={{ dest_file }} mode=0555
+    notify: Restart server
+
+  - name: Start server
+    service: name=httpd state=started enabled=yes
+
+  handlers:
+  - name: Restart server
+    service: name=httpd state=restarted
