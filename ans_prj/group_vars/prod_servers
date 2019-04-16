@@ -1,3 +1,4 @@
 ---
+owner                        : Daniel Ricyardo
 ansible_user                 : ubuntu
 ansible_ssh_private_key_file : ~/.ssh/frankfurt_key2.pem

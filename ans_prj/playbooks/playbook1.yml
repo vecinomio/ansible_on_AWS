@@ -4,19 +4,43 @@
   become: yes
 
   vars:
-    source_file: ./index.html
-    dest_file: /var/www/html
+    source_folder: ../my-site
+    dest_folder: /var/www/html
 
   tasks:
-  - name: Install Apache
-    yum: name=httpd state=latest
-  - name: Copy my page to the server
-    copy: src={{ source_file }} dest={{ dest_file }} mode=0555
-    notify: Restart server
+    - block: #for RedHat
+      - name: Install Apache for RedHat
+        yum: name=httpd state=latest
+      - name: Start Apache on RedHat
+        service: name=httpd state=started enabled=yes
+      when: ansible_os_family == "RedHat"
 
-  - name: Start server
-    service: name=httpd state=started enabled=yes
+    - block: # for Debian
+      - name: Install Apache for Debian
+        apt: name=apache2 state=latest
+      - name: Start Apache on Debian
+        service: name=apache2 state=started enabled=yes
+      when: ansible_os_family == "Debian"
+
+    - name: Generate index.html # work with tamplate
+      generate: src={{ source_folder }}/index.j2 dest={{ dest_folder }}/index.html mode=0555
+      notify:
+        - Restart server on RedHat
+        - Restart server on Debian
+    - name: Copy my-site to the servers # copy static files by loop
+      copy: src={{ source_folder }}/{{ item }} dest={{ dest_folder }} mode=0555
+      loop:
+        - britain.png
+        - austria.png
+      notify:
+        - Restart server on RedHat
+        - Restart server on Debian
+
 
   handlers:
-  - name: Restart server
+  - name: Restart server on RedHat
     service: name=httpd state=restarted
+    when: ansible_os_family == "RedHat"
+  - name: Restart server on Debian
+    service: name=apache2 state=restarted
+    when: ansible_os_family == "Debian"
