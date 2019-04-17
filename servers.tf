@@ -14,12 +14,8 @@ resource "aws_instance" "ansible" {
     Name = "Ansible-master"
   }
   provisioner "file" {
-    source      = "./frankfurt_key1.pem"
-    destination = "~/.ssh/frankfurt_key1.pem"
-  }
-  provisioner "file" {
-    source      = "./frankfurt_key2.pem"
-    destination = "~/.ssh/frankfurt_key2.pem"
+    source      = "./secret/"
+    destination = "~/.ssh/"
   }
   provisioner "file" {
     source      = "./ans_prj"
@@ -43,9 +39,7 @@ resource "aws_instance" "client" {
   ami             = "${element(var.amis, count.index)}" #Amazon Linux or Ubuntu
   instance_type   = "t2.micro"
   key_name        = "frankfurt_key${count.index + 1}"
-  #key_name        = "frankfurt_key1" # without count
   monitoring      = "false"
-  #security_groups = ["${aws_security_group.new_Alex_task1_SSH_HTTP_HTTPS_8080.name}"]
   vpc_security_group_ids = ["sg-0c4d0b9d26d81d4fc", "sg-0bab7953543f29ecc"]
   root_block_device = {
     volume_size = "8"
@@ -54,26 +48,5 @@ resource "aws_instance" "client" {
 
   tags {
     Name = "Client-${count.index + 1}"
-    #Name = "Client-1" # without count
   }
 }
-
-# resource "aws_instance" "client2" {
-#   #count = 1
-#   ami             = "ami-090f10efc254eaf55" #Ubuntu
-#   instance_type   = "t2.micro"
-#   #key_name        = "frankfurt_key${count.index + 1}"
-#   key_name        = "frankfurt_key2"
-#   monitoring      = "false"
-#   #security_groups = ["${aws_security_group.new_Alex_task1_SSH_HTTP_HTTPS_8080.name}"]
-#   vpc_security_group_ids = ["sg-0c4d0b9d26d81d4fc", "sg-0bab7953543f29ecc"]
-#   root_block_device = {
-#     volume_size = "8"
-#     volume_type = "gp2"
-#   }
-#
-#   tags {
-#     #Name = "Client-${count.index + 1}"
-#     Name = "Client-2"
-#   }
-# }

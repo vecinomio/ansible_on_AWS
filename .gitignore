@@ -1,6 +1,5 @@
 imaki_Frankfurt.pem
-frankfurt_key1.pem
-frankfurt_key2.pem
+secret
 .terraform
 terraform.tfstate
 terraform.tfstate.backup

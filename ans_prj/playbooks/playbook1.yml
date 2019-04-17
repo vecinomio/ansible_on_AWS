@@ -8,6 +8,10 @@
     dest_folder: /var/www/html
 
   tasks:
+    - name: Do smth on ansible_master # delegate_to
+      shell: echo This file was created on Ansible-master > /home/ec2-user/log.txt
+      delegate_to: 127.0.0.1
+
     - block: #for RedHat
       - name: Install Apache for RedHat
         yum: name=httpd state=latest
@@ -23,15 +27,15 @@
       when: ansible_os_family == "Debian"
 
     - name: Generate index.html # work with tamplate
-      generate: src={{ source_folder }}/index.j2 dest={{ dest_folder }}/index.html mode=0555
+      template: src={{ source_folder }}/index.j2 dest={{ dest_folder }}/index.html mode=0555
       notify:
         - Restart server on RedHat
         - Restart server on Debian
     - name: Copy my-site to the servers # copy static files by loop
       copy: src={{ source_folder }}/{{ item }} dest={{ dest_folder }} mode=0555
       loop:
-        - britain.png
-        - austria.png
+        - lambo.png
+        - ferrari.jpg
       notify:
         - Restart server on RedHat
         - Restart server on Debian
