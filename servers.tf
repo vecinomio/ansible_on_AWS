@@ -1,9 +1,9 @@
+# =================== ANSIBLE-MASTER =================== #
 resource "aws_instance" "ansible" {
   ami             = "${var.ami}" #Amazon Linux
   instance_type   = "t2.micro"
   key_name        = "${var.key_name}"
   monitoring      = "false"
-  #security_groups = ["${aws_security_group.new_Alex_task1_SSH_HTTP_HTTPS_8080.name}"]
   vpc_security_group_ids = ["sg-0bab7953543f29ecc"] # My-firewall-HTTP-HTTPS-SSH
   root_block_device = {
     volume_size = "8"
@@ -13,18 +13,28 @@ resource "aws_instance" "ansible" {
   tags {
     Name = "Ansible-master"
   }
+  # Here we need to rewrite inventory file according to the new clients private_ip
+  provisioner "local-exec" {
+    command =<<EOF
+      echo [RTH] > ./${var.prj_dir}/hosts.txt
+      echo client-1 ansible_host=${aws_instance.client.0.private_ip} >> ./${var.prj_dir}/hosts.txt
+      echo [DEB] >> ./${var.prj_dir}/hosts.txt
+      echo client-2 ansible_host=${aws_instance.client.1.private_ip} >> ./${var.prj_dir}/hosts.txt
+EOF
+  }
   provisioner "file" {
     source      = "./secret/"
     destination = "~/.ssh/"
   }
   provisioner "file" {
-    source      = "./ans_prj"
-    destination = "~/ans_prj"
+    source      = "./${var.prj_dir}"
+    destination = "~/${var.prj_dir}"
   }
   provisioner "remote-exec" {
     inline = [
       "sudo pip install ansible",
-      "sudo chmod 400 ~/.ssh/frankfurt_key*"
+      "sudo chmod 400 ~/.ssh/frankfurt_key*",
+      "cd ans_prj && ansible client-2 --become -m raw -a 'apt install -y python-minimal python-simplejson'"
     ]
   }
   connection {
@@ -34,8 +44,9 @@ resource "aws_instance" "ansible" {
   }
 }
 
+# ================== CLIENTS ==================== #
 resource "aws_instance" "client" {
-  count = 2
+  count = 2 # number of clients
   ami             = "${element(var.amis, count.index)}" #Amazon Linux or Ubuntu
   instance_type   = "t2.micro"
   key_name        = "frankfurt_key${count.index + 1}"

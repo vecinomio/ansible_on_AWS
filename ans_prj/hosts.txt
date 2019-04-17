@@ -1,5 +1,4 @@
-[test_servers]
-client-1 ansible_host=
-
-[prod_servers]
-client-2 ansible_host=
+[RTH]
+client-1 ansible_host=172.31.43.37
+[DEB]
+client-2 ansible_host=172.31.43.14
