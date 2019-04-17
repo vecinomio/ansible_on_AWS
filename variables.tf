@@ -8,6 +8,10 @@ variable "key_name" {
     default = "imaki_Frankfurt"
 }
 
+variable "prj_dir" {
+    default = "ans_prj"
+}
+
 variable "amis" {
     description = "Run the EC2 Instances with these ami"
     type = "list"
