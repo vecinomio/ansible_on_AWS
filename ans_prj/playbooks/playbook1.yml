@@ -9,8 +9,9 @@
 
   tasks:
     - name: Do smth on ansible_master # delegate_to
-      shell: echo This file was created on Ansible-master > /home/ec2-user/log.txt
+      shell: echo This file was created on Ansible-master by {{ ansible_host }}> /home/ec2-user/log.txt
       delegate_to: 127.0.0.1
+      ignore_errors: yes
 
     - block: #for RedHat
       - name: Install Apache for RedHat
