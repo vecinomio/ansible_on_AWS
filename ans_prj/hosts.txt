@@ -1,5 +1,4 @@
 [RTH]
-client-1 ansible_host=172.31.46.160
+client-1 ansible_host=172.31.47.151
 [DEB]
-client-2 ansible_host=172.31.34.191
-client-3 ansible_host=172.31.43.125
+client-2 ansible_host=172.31.40.189
