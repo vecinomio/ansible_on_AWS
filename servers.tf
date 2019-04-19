@@ -20,7 +20,6 @@ resource "aws_instance" "ansible" {
       echo client-1 ansible_host=${aws_instance.client.0.private_ip} >> ./${var.prj_dir}/hosts.txt
       echo [DEB] >> ./${var.prj_dir}/hosts.txt
       echo client-2 ansible_host=${aws_instance.client.1.private_ip} >> ./${var.prj_dir}/hosts.txt
-      echo client-3 ansible_host=${aws_instance.client.2.private_ip} >> ./${var.prj_dir}/hosts.txt
 EOF
   }
   provisioner "file" {
@@ -35,7 +34,7 @@ EOF
     inline = [
       "sudo pip install ansible",
       "sudo chmod 400 ~/.ssh/frankfurt_key*",
-      "cd ans_prj && ansible DEB --become -m raw -a 'apt install -y python-minimal python-simplejson'"
+      "cd ans_prj && ansible DEB --become -m raw -a 'apt install -y python-minimal python-simplejson' && ansible-playbook playbooks/playbook1.yml"
     ]
   }
   connection {
@@ -47,7 +46,7 @@ EOF
 
 # ================== CLIENTS ==================== #
 resource "aws_instance" "client" {
-  count = 3 # number of clients
+  count = 2 # number of clients
   ami             = "${element(var.amis, count.index)}" #Amazon Linux or Ubuntu
   instance_type   = "t2.micro"
   key_name        = "${element(var.client_keys, count.index)}" #Attach key
