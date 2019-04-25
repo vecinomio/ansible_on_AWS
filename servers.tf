@@ -40,7 +40,7 @@ EOF
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    private_key = "${file("imaki_Frankfurt.pem")}"
+    private_key = "${file("~/.ssh/imaki_Frankfurt.pem")}"
   }
 }
 
